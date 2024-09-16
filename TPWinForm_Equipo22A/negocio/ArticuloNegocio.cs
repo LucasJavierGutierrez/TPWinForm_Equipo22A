@@ -20,9 +20,10 @@ namespace negocio
             SqlDataReader lector;
             try
             {
-                conexion.ConnectionString = "server=.\\SQLEXPRESS; database=CATALOGO_DB; integrated security = true";
+                conexion.ConnectionString = "server=.\\SQLEXPRESS; database=CATALOGO_P3_DB; integrated security = true";
                 comando.CommandType = System.Data.CommandType.Text;
-                comando.CommandText = "SELECT A.Id,A.CODIGO, A.Nombre,A.Descripcion,M.Descripcion AS Marca,C.Descripcion AS TIPO,A.ImagenUrl, A.Precio, A.IdCategoria, A.IdMarca FROM ARTICULOS A LEFT JOIN MARCAS M ON M.ID= A.IDMARCA LEFT JOIN CATEGORIAS C ON C.ID= A.IdCategoria";
+                //  comando.CommandText = "SELECT A.Id,A.CODIGO, A.Nombre,A.Descripcion,M.Descripcion AS Marca,C.Descripcion AS TIPO,A.ImagenUrl, A.Precio, A.IdCategoria, A.IdMarca FROM ARTICULOS A LEFT JOIN MARCAS M ON M.ID= A.IDMARCA LEFT JOIN CATEGORIAS C ON C.ID= A.IdCategoria";
+                comando.CommandText = "SELECT A.Id,A.CODIGO, A.Nombre,A.Descripcion,M.Descripcion AS Marca,C.Descripcion AS TIPO,I.ImagenUrl, A.Precio, A.IdCategoria, A.IdMarca FROM ARTICULOS A LEFT JOIN MARCAS M ON M.ID= A.IDMARCA LEFT JOIN CATEGORIAS C ON C.ID= A.IdCategoria LEFT JOIN IMAGENES I ON I.IdArticulo = A.Id";
                 comando.Connection = conexion;  
                 conexion.Open();
 
@@ -40,10 +41,15 @@ namespace negocio
                         art.Nombre = (string)lector["NOMBRE"];
                     if (!(lector["Descripcion"] is DBNull))
                         art.Descripcion = (string)lector["Descripcion"];
-                    if (!(lector["ImagenUrl"] is DBNull))
-                    art.ImagenUrl = (string)lector["ImagenUrl"];
+        
                     if (!(lector["Precio"] is DBNull))
                         art.Precio = (decimal)lector["Precio"];
+
+
+                    art.Imagenes = new Imagenes();
+                    art.Imagenes.Id = (int)lector["Id"];
+                    art.Imagenes.ImagenUrl = (string)lector["ImagenUrl"];
+                    art.Imagenes.IdArticulo = art.Id;
 
                     art.Marca = new Marca();
                     art.Marca.Id = (int)lector["IdMarca"];
@@ -84,9 +90,20 @@ namespace negocio
 
             try
             {
-              datos.setearConsulta("Insert into ARTICULOS (Codigo, Nombre, Descripcion, IdMarca, IdCategoria, Precio, imagenUrl) values ('" + articuloNuevo.Codigo + "','" + articuloNuevo.Nombre + "','" + articuloNuevo.Descripcion + "', @idMarca, @idCategoria,'" + articuloNuevo.Precio+"','" + articuloNuevo.ImagenUrl+"' )");
+              datos.setearConsulta("Insert into ARTICULOS (Codigo, Nombre, Descripcion, IdMarca, IdCategoria, Precio) values ('" + articuloNuevo.Codigo + "','" + articuloNuevo.Nombre + "','" + articuloNuevo.Descripcion + "', @idMarca, @idCategoria,'" + articuloNuevo.Precio+"' )");
                 datos.setearParametro("idMarca", articuloNuevo.Marca.Id);
                 datos.setearParametro("idCategoria", articuloNuevo.Categoria.Id);
+
+                //      datos.setearConsulta("INSERT INTO IMAGENES (IdArticulo, ImagenUrl) VALUES ('"+ articuloNuevo.Id +"', @ImagenUrl)");
+
+     //           datos.setearConsulta("INSERT INTO IMAGENES (IdArticulo, ImagenUrl) VALUES (@IdArticulo , @ImagenUrl)");
+        //        datos.setearParametro("IdArticulo", articuloNuevo.Id);
+       //         datos.setearParametro("ImagenUrl", articuloNuevo.Imagenes.ImagenUrl);
+
+
+
+                Console.WriteLine("Id del artículo insertado: " + articuloNuevo.Id);
+
                 datos.ejecutarAccion();
 
             }
@@ -109,10 +126,10 @@ namespace negocio
 
             try
             {
-                datos.setearConsulta("UPDATE ARTICULOS SET Codigo=@Codigo , Descripcion = @Descripcion, ImagenUrl =@ImagenUrl, Precio =@Precio, IdCategoria=@IdCategoria, IdMarca =@IdMarca where Id=@Id");
+                datos.setearConsulta("UPDATE ARTICULOS SET Codigo=@Codigo , Descripcion = @Descripcion, IdImagenes =@ImagenUrl, Precio =@Precio, IdCategoria=@IdCategoria, IdMarca =@IdMarca where Id=@Id");
                 datos.setearParametro("@Codigo", artModificado.Codigo);
                 datos.setearParametro("@Descripcion", artModificado.Descripcion);
-                datos.setearParametro("@ImagenUrl", artModificado.ImagenUrl);
+                datos.setearParametro("@ImagenUrl", artModificado.Imagenes.ImagenUrl); //ImagenUrl
                 datos.setearParametro("@Precio", artModificado.Precio);
                 datos.setearParametro("@IdCategoria", artModificado.Categoria.Id);
                 datos.setearParametro("@IdMarca", artModificado.Marca.Id);
@@ -151,7 +168,7 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                string consulta = "SELECT A.Id,A.CODIGO,A.Nombre,A.Descripcion,M.Descripcion AS Marca,C.Descripcion AS TIPO,A.ImagenUrl,A.Precio,A.IdCategoria,A.IdMarca FROM ARTICULOS A LEFT JOIN MARCAS M ON M.ID= A.IDMARCA LEFT JOIN CATEGORIAS C ON C.ID= A.IdCategoria WHERE ";
+                string consulta = "SELECT A.Id,A.CODIGO,A.Nombre,A.Descripcion,M.Descripcion AS Marca,C.Descripcion AS TIPO,I.ImagenUrl,A.Precio,A.IdCategoria,A.IdMarca FROM ARTICULOS A LEFT JOIN MARCAS M ON M.ID= A.IDMARCA LEFT JOIN CATEGORIAS C ON C.ID= A.IdCategoria LEFT JOIN IMAGENES I ON I.IdArticulo = A.Id WHERE ";
                 switch (campo)
                 {
                     case "Nombre":
@@ -226,10 +243,17 @@ namespace negocio
                         art.Nombre = (string)datos.Lector["NOMBRE"];
                     if (!(datos.Lector["Descripcion"] is DBNull))
                         art.Descripcion = (string)datos.Lector["Descripcion"];
-                    if (!(datos.Lector["ImagenUrl"] is DBNull))
-                        art.ImagenUrl = (string)datos.Lector["ImagenUrl"];
+      
                     if (!(datos.Lector["Precio"] is DBNull))
                         art.Precio = (decimal)datos.Lector["Precio"];
+
+        
+                        art.Imagenes = new Imagenes();
+                    art.Imagenes.Id = (int)datos.Lector["IdImagenes"];
+                    art.Imagenes.IdArticulo = (int)datos.Lector["IdArticulo"];
+                    art.Imagenes.ImagenUrl = (string)datos.Lector["ImagenUrl"];
+
+
 
                     art.Marca = new Marca();
                     art.Marca.Id = (int)datos.Lector["IdMarca"];

@@ -38,12 +38,14 @@ namespace Forms
         {
             //Articulo arti = new Articulo();
             ArticuloNegocio negocio = new ArticuloNegocio();
+
             try
             {
     
                 if (articulo == null)
                     articulo = new Articulo();
-                
+                articulo.Imagenes = new Imagenes();
+
                 //  arti.Codigo = int.Parse(txtCodigoArticulo.Text);
                 articulo.Codigo = txtCodigoArticulo.Text;
                 articulo.Nombre = txtNombreArticulo.Text;
@@ -51,7 +53,12 @@ namespace Forms
                 articulo.Categoria = (Categoria)cboCategoria.SelectedItem;
                 articulo.Marca =  (Marca)cboMarca.SelectedItem;
                 articulo.Precio = decimal.Parse(txtPrecio.Text);
-                articulo.ImagenUrl = txtImagenUrl.Text;
+                
+                articulo.Imagenes.ImagenUrl = txtImagenUrl.Text;
+          
+
+
+
 
                 if (articulo.Id != 0)
                 {
@@ -90,6 +97,8 @@ namespace Forms
         {
             CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
             MarcaNegocio marcaNegocio = new MarcaNegocio();
+            ImagenesNegocio imagenesNegocio = new ImagenesNegocio();
+
             try
             {
                 cboCategoria.DataSource = categoriaNegocio.listar();
@@ -99,13 +108,16 @@ namespace Forms
                 cboMarca.ValueMember = "Id";
                 cboMarca.DisplayMember = "nombreMarca";
 
+
+
+
                 if (articulo !=null)
                 {
                     txtCodigoArticulo.Text = articulo.Codigo;
                     txtNombreArticulo.Text= articulo.Nombre;
                     txtDescripcion.Text= articulo.Descripcion;
-                    txtImagenUrl.Text = articulo.ImagenUrl;
-                    cargarImagen(articulo.ImagenUrl);
+                    txtImagenUrl.Text = articulo.Imagenes.ImagenUrl;
+                    cargarImagen(txtImagenUrl.Text);
                     txtPrecio.Text = articulo.Precio.ToString();
                     cboMarca.SelectedValue = articulo.Marca.Id;
                     cboCategoria.SelectedValue = articulo.Marca.Id;

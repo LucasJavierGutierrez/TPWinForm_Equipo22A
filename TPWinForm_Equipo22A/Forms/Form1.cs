@@ -23,7 +23,7 @@ namespace Forms
 
         private void ocultarColumnas()
         {
-            dgvComercio.Columns["ImagenUrl"].Visible = false;
+       //     dgvComercio.Columns["ImagenUrl"].Visible = false;
             dgvComercio.Columns["Id"].Visible = false;
             dgvComercio.Columns["Marca"].Visible = false;
             dgvComercio.Columns["Categoria"].Visible = false;
@@ -50,7 +50,7 @@ namespace Forms
                 articuloList = negocio.listar();
                 dgvComercio.DataSource = articuloList;
                 ocultarColumnas();
-                cargarImagen(articuloList[0].ImagenUrl);
+                cargarImagen(articuloList[0].Imagenes.ImagenUrl);
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace Forms
             {
 
             Articulo selec = (Articulo)dgvComercio.CurrentRow.DataBoundItem;
-            cargarImagen(selec.ImagenUrl);
+            cargarImagen(selec.Imagenes.ImagenUrl);
             }
 
         }

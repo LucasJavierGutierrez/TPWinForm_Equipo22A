@@ -30,7 +30,18 @@ namespace negocio
            comando.CommandText = consulta;
        }
 
-       public void ejecutarLectura()
+        public object ejecutarConsultaScalar()
+        {
+            try
+            {
+                return comando.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void ejecutarLectura()
        {
            comando.Connection = conexion;
            try
@@ -58,7 +69,7 @@ namespace negocio
            }
        }
 
-       public void setearParametro(string nombre, object valor)
+        public void setearParametro(string nombre, object valor)
        {
            comando.Parameters.AddWithValue(nombre, valor);
        }
